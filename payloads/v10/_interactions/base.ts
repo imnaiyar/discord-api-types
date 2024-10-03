@@ -14,10 +14,7 @@ import type { APIEntitlement } from '../monetization';
 import type { APIUser } from '../user';
 import type { InteractionType } from './responses';
 
-/**
- * https://discord.com/developers/docs/resources/channel#message-interaction-metadata-object
- */
-export interface APIMessageInteractionMetadata {
+export interface APIApplicationCommandInteractionMetadataBase {
 	/**
 	 * ID of the interaction
 	 */
@@ -34,19 +31,55 @@ export interface APIMessageInteractionMetadata {
 	 * IDs for installation context(s) related to an interaction. Details in Authorizing Integration Owners Object
 	 */
 	authorizing_integration_owners: APIAuthorizingIntegrationOwnersMap;
+
 	/**
 	 * ID of the original response message, present only on follow-up messages
 	 */
 	original_response_message_id?: Snowflake;
+}
+
+/**
+ * https://discord.com/developers/docs/resources/channel#message-interaction-metadata-object-application-command-interaction-metadata-structure
+ */
+export interface APIApplicationCommandInteractionMetadata extends APIApplicationCommandInteractionMetadataBase {
+	/**
+	 * The user the command was run on, present only user command interactions
+	 */
+	target_user?: APIUser;
+
+	/**
+	 * The ID of the message the command was run on, present only on message command interactions. The oringinal response will also have {@apilink APIMessage#message_reference} and {@apilink APIMessage#referenced_message} pointing to this message.
+	 */
+	target_message_id?: Snowflake;
+}
+
+/**
+ * https://discord.com/developers/docs/resources/channel#message-interaction-metadata-object-message-component-interaction-metadata-structure
+ */
+export interface APIMessageComponentInteractionMetadata extends APIApplicationCommandInteractionMetadataBase {
 	/**
 	 * ID of the message that contained interactive component, present only on messages created from component interactions
 	 */
-	interacted_message_id?: Snowflake;
+	interacted_message_id: Snowflake;
+}
+
+/**
+ * https://discord.com/developers/docs/resources/channel#message-interaction-metadata-object-modal-submit-interaction-metadata-structure
+ */
+export interface APIModalSubmitInteractionMetadata extends APIApplicationCommandInteractionMetadataBase {
 	/**
 	 * Metadata for the interaction that was used to open the modal, present only on modal submit interactions
 	 */
-	triggering_interaction_metadata?: APIMessageInteractionMetadata;
+	triggering_interaction_metadata: APIApplicationCommandInteractionMetadata | APIMessageComponentInteractionMetadata;
 }
+
+/**
+ * https://discord.com/developers/docs/resources/channel#message-interaction-metadata-object
+ */
+export type APIMessageInteractionMetadata =
+	| APIApplicationCommandInteractionMetadata
+	| APIMessageComponentInteractionMetadata
+	| APIModalSubmitInteractionMetadata;
 
 export type PartialAPIMessageInteractionGuildMember = Pick<
 	APIGuildMember,
