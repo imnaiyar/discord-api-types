@@ -577,6 +577,12 @@ export enum GuildFeature {
 	 * Guild has access to guest invites
 	 */
 	GuestsEnabled = 'GUESTS_ENABLED',
+	/**
+	 * Guild has migrated to the new pin messages permission
+	 *
+	 * @unstable This feature is currently not documented by Discord, but has known value
+	 */
+	PinPermissionMigrationComplete = 'PIN_PERMISSION_MIGRATION_COMPLETE',
 }
 
 /**
@@ -1074,6 +1080,9 @@ export interface APIGuildWelcomeScreenChannel {
 	emoji_name: string | null;
 }
 
+/**
+ * @unstable https://github.com/discord/discord-api-docs/pull/2547
+ */
 export interface APIGuildMembershipScreening {
 	/**
 	 * When the fields were last updated
@@ -1089,8 +1098,9 @@ export interface APIGuildMembershipScreening {
 	description: string | null;
 }
 
-// TODO: make this a union based on the type in the future, when new types are added
-
+/**
+ * @unstable https://github.com/discord/discord-api-docs/pull/2547
+ */
 export interface APIGuildMembershipScreeningField {
 	/**
 	 * The type of field
@@ -1110,6 +1120,9 @@ export interface APIGuildMembershipScreeningField {
 	required: boolean;
 }
 
+/**
+ * @unstable https://github.com/discord/discord-api-docs/pull/2547
+ */
 export enum MembershipScreeningFieldType {
 	/**
 	 * Server Rules
@@ -1230,6 +1243,9 @@ export enum GuildOnboardingPromptType {
 	Dropdown,
 }
 
+/**
+ * @see {@link https://discord.com/developers/docs/resources/guild#incidents-data-object}
+ */
 export interface APIIncidentsData {
 	/**
 	 * When invites get enabled again

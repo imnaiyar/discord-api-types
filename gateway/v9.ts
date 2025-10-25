@@ -46,7 +46,7 @@ import type {
 	GatewayGuildMembersChunkPresence,
 	APIBaseMessage,
 	APIGuildMemberJoined,
-	APIVoiceStateMember,
+	APIVoiceState,
 } from '../payloads/v9/index';
 import type { ReactionType } from '../rest/v9/index';
 import type { _Nullable } from '../utils/internals';
@@ -285,6 +285,7 @@ export enum GatewayDispatchEvents {
 	MessageReactionRemoveEmoji = 'MESSAGE_REACTION_REMOVE_EMOJI',
 	MessageUpdate = 'MESSAGE_UPDATE',
 	PresenceUpdate = 'PRESENCE_UPDATE',
+	RateLimited = 'RATE_LIMITED',
 	Ready = 'READY',
 	Resumed = 'RESUMED',
 	StageInstanceCreate = 'STAGE_INSTANCE_CREATE',
@@ -373,6 +374,7 @@ export type GatewayDispatchPayload =
 	| GatewayMessageReactionRemoveEmojiDispatch
 	| GatewayMessageUpdateDispatch
 	| GatewayPresenceUpdateDispatch
+	| GatewayRateLimitedDispatch
 	| GatewayReadyDispatch
 	| GatewayResumedDispatch
 	| GatewaySoundboardSoundsDispatch
@@ -878,7 +880,7 @@ export interface GatewayGuildCreateDispatchData extends APIGuild {
 	 *
 	 * @see {@link https://discord.com/developers/docs/resources/voice#voice-state-object}
 	 */
-	voice_states: GatewayVoiceStateUpdateDispatchData[];
+	voice_states: APIBaseVoiceState[];
 	/**
 	 * Users in the guild
 	 *
@@ -1559,6 +1561,10 @@ export interface GatewayInviteCreateDispatchData {
 	 * How many times the invite has been used (always will be `0`)
 	 */
 	uses: 0;
+	/**
+	 * The expiration date of this invite.
+	 */
+	expires_at: string | null;
 }
 
 /**
@@ -2097,7 +2103,7 @@ export type GatewayVoiceStateUpdateDispatch = _DataPayload<
 /**
  * @see {@link https://discord.com/developers/docs/topics/gateway-events#voice-state-update}
  */
-export interface GatewayVoiceStateUpdateDispatchData extends APIBaseVoiceState, APIVoiceStateMember {}
+export type GatewayVoiceStateUpdateDispatchData = APIVoiceState;
 
 /**
  * @see {@link https://discord.com/developers/docs/topics/gateway-events#voice-server-update}
@@ -2210,6 +2216,73 @@ export interface GatewayMessagePollVoteDispatchData {
 	 * ID of the answer
 	 */
 	answer_id: number;
+}
+
+/**
+ * @see {@link https://discord.com/developers/docs/events/gateway-events#rate-limited}
+ */
+export type GatewayRateLimitedDispatch<
+	Opcode extends keyof GatewayOpcodeRateLimitMetadataMap = keyof GatewayOpcodeRateLimitMetadataMap,
+> = _DataPayload<GatewayDispatchEvents.RateLimited, GatewayRateLimitedDispatchData<Opcode>>;
+
+/**
+ * @see {@link https://discord.com/developers/docs/events/gateway-events#rate-limited}
+ */
+export type GatewayRateLimitedRequestGuildMembersDispatch =
+	GatewayRateLimitedDispatch<GatewayOpcodes.RequestGuildMembers>;
+
+/**
+ * @see {@link https://discord.com/developers/docs/events/gateway-events#rate-limited}
+ */
+export interface GatewayRateLimitedDispatchData<
+	Opcode extends keyof GatewayOpcodeRateLimitMetadataMap = keyof GatewayOpcodeRateLimitMetadataMap,
+> {
+	/**
+	 * {@link GatewayOpcodes | Gateway opcode} of the event that was rate limited
+	 */
+	opcode: Opcode;
+	/**
+	 * The number of seconds to wait before submitting another request
+	 */
+	retry_after: number;
+	/**
+	 * Metadata for the event that was rate limited
+	 */
+	meta: GatewayOpcodeRateLimitMetadataMap[Opcode];
+}
+
+/**
+ * @see {@link https://discord.com/developers/docs/events/gateway-events#rate-limited}
+ */
+export type GatewayRateLimitedRequestGuildMembersDispatchData =
+	GatewayRateLimitedDispatchData<GatewayOpcodes.RequestGuildMembers>;
+
+/**
+ * Map of gateway opcodes to their rate limit metadata types
+ *
+ * @see {@link https://discord.com/developers/docs/events/gateway-events#rate-limited-rate-limit-metadata-for-opcode-structure}
+ */
+export interface GatewayOpcodeRateLimitMetadataMap {
+	[GatewayOpcodes.RequestGuildMembers]: GatewayRequestGuildMemberRateLimitMetadata;
+}
+
+/**
+ * Types of metadata that can be received in a {@link GatewayRateLimitedDispatchData.meta} field
+ */
+export type GatewayRateLimitedMetadata = GatewayOpcodeRateLimitMetadataMap[keyof GatewayOpcodeRateLimitMetadataMap];
+
+/**
+ * Rate limit metadata for the {@link GatewayOpcodes.RequestGuildMembers} opcode
+ */
+export interface GatewayRequestGuildMemberRateLimitMetadata {
+	/**
+	 * Id of the guild members were requested for
+	 */
+	guild_id: Snowflake;
+	/**
+	 * Nonce used to identify the {@link GatewayGuildMembersChunkDispatch} response
+	 */
+	nonce?: string;
 }
 
 // #endregion Dispatch Payloads

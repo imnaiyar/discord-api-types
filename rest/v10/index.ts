@@ -382,6 +382,16 @@ export const Routes = {
 
 	/**
 	 * Route for:
+	 * - GET `/guilds/{guild.id}/roles/member-counts`
+	 *
+	 * @unstable
+	 */
+	guildRoleMemberCounts(guildId: Snowflake) {
+		return `/guilds/${guildId}/roles/member-counts` as const;
+	},
+
+	/**
+	 * Route for:
 	 * - GET  `/guilds/{guild.id}/prune`
 	 * - POST `/guilds/{guild.id}/prune`
 	 */
@@ -808,6 +818,8 @@ export const Routes = {
 	 * Route for:
 	 * - GET   `/guilds/{guild.id}/member-verification`
 	 * - PATCH `/guilds/{guild.id}/member-verification`
+	 *
+	 * @unstable https://github.com/discord/discord-api-docs/pull/2547
 	 */
 	guildMemberVerification(guildId: Snowflake) {
 		return `/guilds/${guildId}/member-verification` as const;

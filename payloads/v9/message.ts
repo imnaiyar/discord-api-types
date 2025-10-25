@@ -1022,6 +1022,10 @@ export enum ComponentType {
 	 * Container associating a label and description with a component
 	 */
 	Label,
+	/**
+	 * Component for uploading files
+	 */
+	FileUpload,
 	// EVERYTHING BELOW THIS LINE SHOULD BE OLD NAMES FOR RENAMED ENUM MEMBERS //
 
 	/**
@@ -1573,6 +1577,16 @@ export interface APIFileComponent extends APIBaseComponent<ComponentType.File> {
 	 * @defaultValue `false`
 	 */
 	spoiler?: boolean;
+
+	/**
+	 * The name of the file. This field is ignored and provided by the API as part of the response
+	 */
+	name?: string;
+
+	/**
+	 * The size of the file in bytes. This field is ignored and provided by the API as part of the response
+	 */
+	size?: number;
 }
 
 /**
@@ -1647,6 +1661,28 @@ export interface APILabelComponent extends APIBaseComponent<ComponentType.Label>
 	 * The component within the label
 	 */
 	component: APIComponentInLabel;
+}
+
+/**
+ * @see {@link https://discord.com/developers/docs/components/reference#file-upload}
+ */
+export interface APIFileUploadComponent extends APIBaseComponent<ComponentType.FileUpload> {
+	/**
+	 * Id for the file upload; max 100 characters
+	 */
+	custom_id: string;
+	/**
+	 * Minimum number of items that must be uploaded (defaults to 1); min 0, max 10
+	 */
+	min_values?: number;
+	/**
+	 * Maximum number of items that can be uploaded (defaults to 1); max 10
+	 */
+	max_values?: number;
+	/**
+	 * Whether the file upload requires files to be uploaded before submitting the modal (defaults to `true`)
+	 */
+	required?: boolean;
 }
 
 /**
@@ -1729,7 +1765,7 @@ export type APIComponentInModalActionRow = APITextInputComponent;
 /**
  * @see {@link https://discord.com/developers/docs/components/reference#label-label-child-components}
  */
-export type APIComponentInLabel = APISelectMenuComponent | APITextInputComponent;
+export type APIComponentInLabel = APIFileUploadComponent | APISelectMenuComponent | APITextInputComponent;
 
 /**
  * @see {@link https://discord.com/developers/docs/components/reference#section}

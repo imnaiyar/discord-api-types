@@ -27,6 +27,8 @@ import type {
 	APIGuildOnboardingPrompt,
 	APIGuildOnboardingPromptOption,
 	APIRoleColors,
+	APIIncidentsData,
+	APIGuildChannel,
 } from '../../payloads/v9/index';
 import type {
 	_AddUndefinedToPossiblyUndefinedPropertiesOfInterface,
@@ -356,7 +358,7 @@ export type RESTDeleteAPIGuildResult = never;
 /**
  * @see {@link https://discord.com/developers/docs/resources/guild#get-guild-channels}
  */
-export type RESTGetAPIGuildChannelsResult = APIChannel[];
+export type RESTGetAPIGuildChannelsResult = APIGuildChannel[];
 
 /**
  * @see {@link https://discord.com/developers/docs/resources/guild#create-guild-channel}
@@ -541,6 +543,13 @@ export interface RESTPatchAPICurrentGuildMemberNicknameJSONBody {
 }
 
 /**
+ * @see {@link https://discord.com/developers/docs/resources/guild#modify-current-user-nick}
+ * @deprecated Use {@link https://discord.com/developers/docs/resources/guild#modify-current-member | Modify Current Member} instead.
+ */
+export type RESTPatchAPICurrentGuildMemberNicknameResult =
+	_StrictRequired<RESTPatchAPICurrentGuildMemberNicknameJSONBody>;
+
+/**
  * @see {@link https://discord.com/developers/docs/resources/guild#modify-current-member}
  */
 export interface RESTPatchAPICurrentGuildMemberJSONBody {
@@ -550,14 +559,24 @@ export interface RESTPatchAPICurrentGuildMemberJSONBody {
 	 * Requires `CHANGE_NICKNAME` permission
 	 */
 	nick?: string | null | undefined;
+	/**
+	 * Data URI base64 encoded banner image
+	 */
+	banner?: string | null | undefined;
+	/**
+	 * Data URI base64 encoded avatar image
+	 */
+	avatar?: string | null | undefined;
+	/**
+	 * Guild member bio
+	 */
+	bio?: string | null | undefined;
 }
 
 /**
- * @see {@link https://discord.com/developers/docs/resources/guild#modify-current-user-nick}
- * @deprecated Use {@link https://discord.com/developers/docs/resources/guild#modify-current-member | Modify Current Member} instead.
+ * @see {@link https://discord.com/developers/docs/resources/guild#modify-current-member}
  */
-export type RESTPatchAPICurrentGuildMemberNicknameResult =
-	_StrictRequired<RESTPatchAPICurrentGuildMemberNicknameJSONBody>;
+export type RESTPatchAPICurrentGuildMemberResult = APIGuildMember;
 
 /**
  * @see {@link https://discord.com/developers/docs/resources/guild#add-guild-member-role}
@@ -925,6 +944,9 @@ export type RESTGetAPIGuildWidgetImageResult = ArrayBuffer;
 
 export type RESTGetAPIGuildMemberVerificationResult = APIGuildMembershipScreening;
 
+/**
+ * @unstable https://github.com/discord/discord-api-docs/pull/2547
+ */
 export interface RESTPatchAPIGuildMemberVerificationJSONBody {
 	/**
 	 * Whether Membership Screening is enabled
@@ -940,6 +962,9 @@ export interface RESTPatchAPIGuildMemberVerificationJSONBody {
 	description?: string | null | undefined;
 }
 
+/**
+ * @unstable https://github.com/discord/discord-api-docs/pull/2547
+ */
 export type RESTPatchAPIGuildMemberVerificationResult = APIGuildMembershipScreening;
 
 /**
@@ -1031,9 +1056,11 @@ export interface RESTPutAPIGuildIncidentActionsJSONBody {
 	/**
 	 * When invites will be enabled again
 	 */
-	invites_disabled_until?: string | undefined;
+	invites_disabled_until?: string | null | undefined;
 	/**
 	 * When direct messages will be enabled again
 	 */
-	dms_disabled_until?: string | undefined;
+	dms_disabled_until?: string | null | undefined;
 }
+
+export type RESTPutAPIGuildIncidentActionsResult = APIIncidentsData;
